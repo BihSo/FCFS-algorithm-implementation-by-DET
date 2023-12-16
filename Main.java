@@ -36,20 +36,20 @@ class FCFS {
         }
         for (int i = 1; i < n; i++) {// why start from 1 ?
             waitingTime[i] = Math.max(0 , sumPreBurst[i-1] - arrayList.get(i).arrivalTime);
+            avgWaiting += waitingTime[i];
         }
         for (int i = 0; i < n; i++) {
             turnaroundTime[i] = arrayList.get(i).burstTime + waitingTime[i];
-        }
-        for (int i = 0; i < n ; i++) {
             avgTurnaround += turnaroundTime[i];
-            avgWaiting += waitingTime[i];
         }
-        System.out.println("Process\t\tBurst Time\t\tArrival Time\t\tWaiting Time\t\tTurnaround Time");
+        avgTurnaround /= n;
+        avgWaiting /= n;
+        System.err.println("Process\t\tBurst Time\t\tArrival Time\t\tWaiting Time\t\tTurnaround Time");
         for (int i = 0; i < n; i++) {
             System.out.println("\tP"+ arrayList.get(i).process + "\t\t\t" + arrayList.get(i).burstTime + "\t\t\t\t" + arrayList.get(i).arrivalTime + "\t\t\t\t\t" +
                     waitingTime[i] + "\t\t\t\t\t" + turnaroundTime[i]);
         }
-        System.out.println("\nAvg Waiting : " + (avgWaiting/n));
-        System.out.println("Avg Turnaround : " + (avgTurnaround/n));
+        System.out.println("\nAvg Waiting : " + (avgWaiting));
+        System.out.println("Avg Turnaround : " + (avgTurnaround));
     }
 }
