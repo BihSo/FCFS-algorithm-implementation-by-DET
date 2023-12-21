@@ -1,55 +1,71 @@
-package Debug.Entity.Team;
-import java.util.ArrayList;
-import java.util.Collections;
+package  Debug.Entity.Team;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
 class Process implements Comparable<Process>{
-    static int currentNumberOfProcess = 1;
-    int process;
+    static int currentNumberOfProcess;
+    static int currentTime;
+    static float avgWaitingTime;
+    static float avgTurnaroundTime;
+    String name;
     int arrivalTime;
     int burstTime;
+    int waitingTime;
+    int turnaroundTime;
+    int completionTime;
     Process(int arrivalTime, int burstTime){
         this.arrivalTime = arrivalTime;
         this.burstTime = burstTime;
-        this.process = currentNumberOfProcess++;
+        this.name = "P" + ++currentNumberOfProcess;
     }
     @Override
-    public int compareTo(Process o) {
+    public String toString() {
+        return name +
+                ", arrivalTime=" + arrivalTime +
+                ", burstTime=" + burstTime +
+                ", waitingTime=" + waitingTime +
+                ", turnaroundTime=" + turnaroundTime +
+                ", completionTime=" + completionTime;
+    }
+
+    @Override
+    public int compareTo(@NotNull Process o) {
         return this.arrivalTime - o.arrivalTime;
     }
 }
-class FCFS {
+public class Fcfs {
+    static Scanner in = new Scanner(System.in);
     public static void main(String[] args) {
-        ArrayList<Process> arrayList = new ArrayList<Process>();
-        arrayList.add(new Process(0 , 4));
-        arrayList.add(new Process(4 , 3));
-        arrayList.add(new Process(2 , 10));
-        arrayList.add(new Process(3 , 2));
-        arrayList.add(new Process(1 , 5));
-        Collections.sort(arrayList);
-        int n = arrayList.size();
-        int[] waitingTime = new int[n];
-        int[] turnaroundTime = new int[n];
-        int[] sumPreBurst = new int[n];
-        float avgWaiting = 0 , avgTurnaround = 0;
-        sumPreBurst[0] = arrayList.get(0).burstTime;
-        for (int i = 1; i < n ; i++) {
-            sumPreBurst[i] = arrayList.get(i).burstTime + sumPreBurst[i-1];
+        List<Process> processes = new ArrayList<>();
+        input(processes);
+        Collections.sort(processes);
+        int size = processes.size();
+        for (int i = 0; i < size; i++) {
+            if (processes.get(i).arrivalTime > Process.currentTime){
+                Process.currentTime = processes.get(i).arrivalTime;
+            }
+            Process.currentTime += processes.get(i).burstTime;
+            processes.get(i).completionTime = Process.currentTime;
+            processes.get(i).turnaroundTime = processes.get(i).completionTime - processes.get(i).arrivalTime;
+            processes.get(i).waitingTime = Math.max(processes.get(i).turnaroundTime - processes.get(i).burstTime , 0 );
+            Process.avgWaitingTime += (processes.get(i).waitingTime / (float) size);
+            Process.avgTurnaroundTime += (processes.get(i).turnaroundTime / (float) size);
         }
-        for (int i = 1; i < n; i++) {// why start from 1 ?
-            waitingTime[i] = Math.max(0 , sumPreBurst[i-1] - arrayList.get(i).arrivalTime);
-            avgWaiting += waitingTime[i];
+        output(processes);
+    }
+    public static void output(List<Process> processes){
+        for(Process process : processes) System.out.println(process);
+        System.out.println("Average waiting " + Process.avgWaitingTime);
+        System.out.println("Average turnaround " + Process.avgTurnaroundTime);
+    }
+    public static void input(List<Process> processes ){
+        System.out.println("Enter the number of processes");
+        int num = in.nextInt();
+        for (int i = 0; i < num ; i++) {
+            System.out.println("Enter arrival time for P" + (i + 1));
+            int at = in.nextInt();
+            System.out.println("Enter burst time for P" + (i + 1));
+            int bt = in.nextInt();
+            processes.add(new Process(at , bt));
         }
-        for (int i = 0; i < n; i++) {
-            turnaroundTime[i] = arrayList.get(i).burstTime + waitingTime[i];
-            avgTurnaround += turnaroundTime[i];
-        }
-        avgTurnaround /= n;
-        avgWaiting /= n;
-        System.err.println("Process\t\tBurst Time\t\tArrival Time\t\tWaiting Time\t\tTurnaround Time");
-        for (int i = 0; i < n; i++) {
-            System.out.println("\tP"+ arrayList.get(i).process + "\t\t\t" + arrayList.get(i).burstTime + "\t\t\t\t" + arrayList.get(i).arrivalTime + "\t\t\t\t\t" +
-                    waitingTime[i] + "\t\t\t\t\t" + turnaroundTime[i]);
-        }
-        System.out.println("\nAvg Waiting : " + (avgWaiting));
-        System.out.println("Avg Turnaround : " + (avgTurnaround));
     }
 }
