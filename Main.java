@@ -1,4 +1,4 @@
-package  Debug.Entity.Team;
+package  Debug.Entity.FCFS;
 import org.jetbrains.annotations.NotNull;
 import java.util.*;
 class Process implements Comparable<Process>{
@@ -26,26 +26,24 @@ class Process implements Comparable<Process>{
                 ", turnaroundTime=" + turnaroundTime +
                 ", completionTime=" + completionTime;
     }
-
     @Override
     public int compareTo(@NotNull Process o) {
         return this.arrivalTime - o.arrivalTime;
     }
 }
 public class Fcfs {
-    static Scanner in = new Scanner(System.in);
-    public static void main(String[] args) {
+    public static void run(Scanner in) {
         List<Process> processes = new ArrayList<>();
-        input(processes);
+        input(processes , in);
         Collections.sort(processes);
         int size = processes.size();
         for (int i = 0; i < size; i++) {
             if (processes.get(i).arrivalTime > Process.currentTime){
-                Process.currentTime = processes.get(i).arrivalTime;
+                Process.currentTime = 0;
             }
             Process.currentTime += processes.get(i).burstTime;
             processes.get(i).completionTime = Process.currentTime;
-            processes.get(i).turnaroundTime = processes.get(i).completionTime - processes.get(i).arrivalTime;
+            processes.get(i).turnaroundTime = Math.max(processes.get(i).completionTime - processes.get(i).arrivalTime ,processes.get(i).burstTime);
             processes.get(i).waitingTime = Math.max(processes.get(i).turnaroundTime - processes.get(i).burstTime , 0 );
             Process.avgWaitingTime += (processes.get(i).waitingTime / (float) size);
             Process.avgTurnaroundTime += (processes.get(i).turnaroundTime / (float) size);
@@ -57,7 +55,7 @@ public class Fcfs {
         System.out.println("Average waiting " + Process.avgWaitingTime);
         System.out.println("Average turnaround " + Process.avgTurnaroundTime);
     }
-    public static void input(List<Process> processes ){
+    public static void input(List<Process> processes , Scanner in){
         System.out.println("Enter the number of processes");
         int num = in.nextInt();
         for (int i = 0; i < num ; i++) {
