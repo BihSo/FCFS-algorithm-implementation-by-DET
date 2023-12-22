@@ -23,8 +23,7 @@ class Process implements Comparable<Process>{
                 ", arrivalTime=" + arrivalTime +
                 ", burstTime=" + burstTime +
                 ", waitingTime=" + waitingTime +
-                ", turnaroundTime=" + turnaroundTime +
-                ", completionTime=" + completionTime;
+                ", turnaroundTime=" + turnaroundTime;
     }
     @Override
     public int compareTo(@NotNull Process o) {
